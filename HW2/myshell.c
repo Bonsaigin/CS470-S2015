@@ -1,3 +1,10 @@
+/* myshell.c
+ * Ian Gibson
+ * 2/9/2015
+ * CS470
+ * This is a basic command interpreter. The program reads user input,
+ * and creates a process to run the command.
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,11 +15,16 @@
 
 int parseTheCommand(char command[], char *parsedCommand[])
 {
+  /* Split command into an array
+     return 1 if the command should run in the background
+     return 0 by default */
   char *p;
   char *saveptr1, *token;
   int i;
   int background = 0;
 
+  /* Read tokens from the input until the end of
+     command is found. */
   for (i = 0, p = command; ; i++, p = NULL) {
     token = strtok_r(p, " ", &saveptr1);
     if (token == NULL) break;
@@ -21,7 +33,9 @@ int parseTheCommand(char command[], char *parsedCommand[])
       parsedCommand[i] = NULL;
     }
     else parsedCommand[i] = strdup(token);
-  } 
+  }
+  /* Fill the rest of parsedCommand with NULL
+     to overwrite previous command fully. */
   for (i; i < 20; i++) {
     parsedCommand[i] = NULL;
   }
@@ -30,8 +44,9 @@ int parseTheCommand(char command[], char *parsedCommand[])
 
 void getCommandFromUser(char command[])
 {
+  /* Read in user input from stdin */
   size_t size = 256;
-  scanf("%79[^\n]%*c", command);
+  scanf("%79[^\n]%*c", command); /* ignores '\n' */
 }
 
 int main()
@@ -48,7 +63,6 @@ int main()
   { 
     if ( (pid = fork ())== 0)		
     {
-//      int i;for(i=0;i<20;i++){printf("%d: %s\n",i,parsedCommand[i]);}
       execvp(parsedCommand[0], parsedCommand);	
       perror("Execvp failed");
       exit(EXIT_FAILURE); 
